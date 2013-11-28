@@ -109,7 +109,7 @@ class Command(NoArgsCommand):
         if default_author:
             try:
                 self.default_author = Author.objects.get(
-                    **{Author.USERNAME_FIELD: self.default_author})
+                    slug=default_author)
             except Author.DoesNotExist:
                 raise CommandError(
                     'Invalid Zinnia username for default author "%s"' %

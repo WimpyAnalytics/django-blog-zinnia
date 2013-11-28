@@ -69,12 +69,9 @@ class AuthorListFilterTestCase(BaseListFilterTestCase):
     def setUp(self):
         super(AuthorListFilterTestCase, self).setUp()
         self.authors = [
-            Author.objects.create_user(username='webmaster',
-                                       email='webmaster@example.com'),
-            Author.objects.create_user(username='contributor',
-                                       email='contributor@example.com'),
-            Author.objects.create_user(username='reader',
-                                       email='reader@example.com')]
+            Author.objects.create_user(email='webmaster@example.com'),
+            Author.objects.create_user(email='contributor@example.com'),
+            Author.objects.create_user(email='reader@example.com')]
         self.entry_1.authors.add(self.authors[0])
         self.entry_2.authors.add(*self.authors[:-1])
 

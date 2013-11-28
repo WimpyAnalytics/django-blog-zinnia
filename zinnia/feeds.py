@@ -224,11 +224,9 @@ class AuthorEntries(EntryFeed):
     Feed filtered by an author.
     """
 
-    def get_object(self, request, username):
-        """
-        Retrieve the author by his username.
-        """
-        return get_object_or_404(Author, **{Author.USERNAME_FIELD: username})
+    def get_object(self, request, slug):
+        """Retrieve the author by his slug"""
+        return get_object_or_404(Author, slug=slug)
 
     def items(self, obj):
         """

@@ -36,13 +36,13 @@ class Author(get_user_model(),
         """
         Builds and returns the author's URL based on his username.
         """
-        return ('zinnia:author_detail', [self.get_username()])
+        return ('zinnia_author_detail', [self.slug])
 
     def __str__(self):
         """
-        If the user has a full name, use it instead of the username.
+        If the user has a full name, use it instead of the slug.
         """
-        return self.get_full_name() or self.get_username()
+        return self.get_full_name() or self.slug
 
     class Meta:
         """

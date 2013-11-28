@@ -35,10 +35,10 @@ class CustomCategoryDetail(CustomModelDetailMixin, CategoryDetail):
 
 urlpatterns = patterns(
     '',
-    url(r'^authors/(?P<username>[.+-@\w]+)/$',
+    url(r'^authors/(?P<slug>[.+-@\w]+)/$',
         CustomAuthorDetail.as_view(),
         name='zinnia_author_detail'),
-    url(r'^authors/(?P<username>[.+-@\w]+)/page/(?P<page>\d+)/$',
+    url(r'^authors/(?P<slug>[.+-@\w]+)/page/(?P<page>\d+)/$',
         CustomAuthorDetail.as_view(),
         name='zinnia_author_detail_paginated'),
     url(r'^categories/(?P<path>[-\/\w]+)/page/(?P<page>\d+)/$',

@@ -29,7 +29,7 @@ urlpatterns = patterns(
     url(_(r'^tags/(?P<tag>[^/]+(?u))/$'),
         TagEntries(),
         name='tag_feed'),
-    url(_(r'^authors/(?P<username>[.+-@\w]+)/$'),
+    url(_(r'^authors/(?P<slug>[.+-@\w]+)/$'),
         AuthorEntries(),
         name='author_feed'),
     url(_(r'^categories/(?P<path>[-\/\w]+)/$'),
