@@ -90,7 +90,7 @@ class EntryFeed(ZinniaFeed):
         """Returns the author's URL"""
         try:
             author_url = reverse('zinnia_author_detail',
-                                 args=[self.item_author.username])
+                                 args=[self.item_author.slug])
             return self.site_url + author_url
         except NoReverseMatch:
             return self.site_url
@@ -170,9 +170,9 @@ class CategoryEntries(EntryFeed):
 class AuthorEntries(EntryFeed):
     """Feed filtered by an author"""
 
-    def get_object(self, request, username):
-        """Retrieve the author by his username"""
-        return get_object_or_404(Author, username=username)
+    def get_object(self, request, slug):
+        """Retrieve the author by his slug"""
+        return get_object_or_404(Author, slug=slug)
 
     def items(self, obj):
         """Items are the published entries of the author"""

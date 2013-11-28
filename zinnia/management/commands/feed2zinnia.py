@@ -81,7 +81,7 @@ class Command(LabelCommand):
         if self.default_author:
             try:
                 self.default_author = Author.objects.get(
-                    username=self.default_author)
+                    slug=self.default_author)
             except Author.DoesNotExist:
                 raise CommandError('Invalid username for default author')
 
@@ -154,7 +154,7 @@ class Command(LabelCommand):
                         feed_entry.author_detail.get('email', ''))
                 except IntegrityError:
                     author = Author.objects.get(
-                        username=slugify(feed_entry.author_detail.get('name')))
+                        slug=slugify(feed_entry.author_detail.get('name')))
                 entry.authors.add(author)
 
             self.write_out(self.style.ITEM('OK\n'))
