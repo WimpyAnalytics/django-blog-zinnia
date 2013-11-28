@@ -31,7 +31,6 @@ from zinnia.settings import COPYRIGHT
 from zinnia.settings import FEEDS_FORMAT
 from zinnia.settings import FEEDS_MAX_ITEMS
 from zinnia.views.categories import get_category_or_404
-from zinnia.templatetags.zinnia_tags import get_gravatar
 
 
 class ZinniaFeed(Feed):
@@ -340,10 +339,6 @@ class EntryComments(EntryDiscussions):
     def description(self, obj):
         """Description of the feed"""
         return _('The latest comments for the entry %s') % obj.title
-
-    def item_enclosure_url(self, item):
-        """Returns a gravatar image for enclosure"""
-        return get_gravatar(item.email)
 
     def item_enclosure_length(self, item):
         """Hardcoded enclosure length"""
