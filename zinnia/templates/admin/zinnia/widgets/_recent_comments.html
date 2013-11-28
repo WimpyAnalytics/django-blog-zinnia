@@ -2,8 +2,6 @@
 {% for comment in comments %}
 <tr>
   <th>
-    <img src="{% get_gravatar comment.email 40 "G" %}"
-         class="gravatar photo" alt="{{ comment.name }}" />
   </th>
   <td>
     {% with entry=comment.content_object %}
