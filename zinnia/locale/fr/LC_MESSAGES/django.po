@@ -1501,8 +1501,8 @@ msgid "^today/page/(?P<page>\\d+)/$"
 msgstr "^aujourdhui/page/(?P<page>\\d+)/$"
 
 #: urls/authors.py:15
-msgid "^(?P<username>[.+-@\\w]+)/page/(?P<page>\\d+)/$"
-msgstr "^(?P<username>[.+-@\\w]+)/page/(?P<page>\\d+)/$"
+msgid "^(?P<slug>[.+-@\\w]+)/page/(?P<page>\\d+)/$"
+msgstr "^(?P<slug>[.+-@\\w]+)/page/(?P<page>\\d+)/$"
 
 #: urls/categories.py:15
 msgid "^(?P<path>[-\\/\\w]+)/page/(?P<page>\\d+)/$"
@@ -1525,8 +1525,8 @@ msgid "^tags/(?P<tag>[^/]+(?u))/$"
 msgstr "^tags/(?P<tag>[^/]+(?u))/$"
 
 #: urls/feeds.py:32
-msgid "^authors/(?P<username>[.+-@\\w]+)/$"
-msgstr "^auteurs/(?P<username>[.+-@\\w]+)/$"
+msgid "^authors/(?P<slug>[.+-@\\w]+)/$"
+msgstr "^auteurs/(?P<slug>[.+-@\\w]+)/$"
 
 #: urls/feeds.py:35
 msgid "^categories/(?P<path>[-\\/\\w]+)/$"

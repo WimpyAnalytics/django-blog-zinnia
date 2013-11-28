@@ -29,7 +29,7 @@ urlpatterns = patterns(
     url(_(r'^tags/(?P<tag>[^/]+(?u))/$'),
         TagEntries(),
         name='zinnia_tag_feed'),
-    url(_(r'^authors/(?P<username>[.+-@\w]+)/$'),
+    url(_(r'^authors/(?P<slug>[.+-@\w]+)/$'),
         AuthorEntries(),
         name='zinnia_author_feed'),
     url(_(r'^categories/(?P<path>[-\/\w]+)/$'),

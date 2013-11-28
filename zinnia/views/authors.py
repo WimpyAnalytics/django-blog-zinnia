@@ -33,11 +33,11 @@ class BaseAuthorDetail(object):
 
     def get_queryset(self):
         """
-        Retrieve the author by his username and
+        Retrieve the author by his slug and
         build a queryset of his published entries.
         """
         self.author = get_object_or_404(
-            Author, **{Author.USERNAME_FIELD: self.kwargs['username']})
+            Author, slug=self.kwargs['slug'])
         return self.author.entries_published()
 
     def get_context_data(self, **kwargs):
@@ -68,6 +68,6 @@ class AuthorDetail(EntryQuerysetTemplateResponseMixin,
 
     def get_model_name(self):
         """
-        The model name is the author's username.
+        The model name is the author's slug.
         """
-        return self.author.get_username()
+        return self.author.slug
