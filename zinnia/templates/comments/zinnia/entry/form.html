@@ -17,7 +17,7 @@
     {% endfor %}
     {% if user.is_authenticated %}
     <p class="auth">
-      {% trans "Comment as" %} <strong>{% firstof user.get_full_name user.slug %}</strong>. <a href="{% url 'admin:logout' %}">{% trans "Log out" %}</a>.
+      {% trans "Comment as" %} <strong>{% firstof user.get_full_name user.slug %}</strong>.
     </p>
     {% endif %}
     <p class="submit">
