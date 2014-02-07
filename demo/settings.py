@@ -34,6 +34,7 @@ LANGUAGES = (
     ('es', gettext('Spanish')),
     ('it', gettext('Italian')),
     ('nl', gettext('Dutch')),
+    ('bg', gettext('Bulgarian')),
     ('hu', gettext('Hungarian')),
     ('cs', gettext('Czech')),
     ('sk', gettext('Slovak')),
@@ -43,6 +44,7 @@ LANGUAGES = (
     ('eu', gettext('Basque')),
     ('ca', gettext('Catalan')),
     ('tr', gettext('Turkish')),
+    ('sv', gettext('Swedish')),
     ('hr_HR', gettext('Croatian')),
     ('pt_BR', gettext('Brazilian Portuguese')),
     ('fi_FI', gettext('Finnish (Finland)')),
@@ -55,7 +57,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
+    'django.contrib.admindocs.middleware.XViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
@@ -65,7 +67,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.i18n',
     'django.core.context_processors.request',
-    'django.core.context_processors.media',
     'django.contrib.messages.context_processors.messages',
     'zinnia.context_processors.version',
 )
