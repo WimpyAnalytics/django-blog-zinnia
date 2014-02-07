@@ -1,5 +1,5 @@
 """Zinnia"""
-__version__ = '0.15.dev'
+__version__ = '0.16.dev'  # For Wimpy this is always up one
 __license__ = 'BSD License'
 
 __author__ = 'Fantomas42'
