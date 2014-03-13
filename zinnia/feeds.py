@@ -470,12 +470,6 @@ class EntryComments(EntryDiscussions):
         """
         return _('The latest comments for the entry %s') % obj.title
 
-    def item_enclosure_url(self, item):
-        """
-        Return a gravatar image for enclosure.
-        """
-        return get_gravatar(item.email)
-
     def item_enclosure_length(self, item):
         """
         Hardcoded enclosure length.
