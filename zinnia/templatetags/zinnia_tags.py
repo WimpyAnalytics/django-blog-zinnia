@@ -17,6 +17,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.utils.html import conditional_escape
 from django.template.defaultfilters import stringfilter
+from django.contrib.auth import get_user_model
 from django.contrib.comments.models import CommentFlag
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.comments import get_model as get_comment_model
@@ -286,7 +287,7 @@ def get_recent_linkbacks(number=5,
 
 
 @register.inclusion_tag('zinnia/tags/dummy.html', takes_context=True)
-def zinnia_pagination(context, page, begin_pages=3, end_pages=3,
+def zinnia_pagination(context, page, begin_pages=1, end_pages=1,
                       before_pages=2, after_pages=2,
                       template='zinnia/tags/pagination.html'):
     """
@@ -303,13 +304,7 @@ def zinnia_pagination(context, page, begin_pages=3, end_pages=3,
     middle = list(page.paginator.page_range[
         max(page.number - before_pages - 1, 0):page.number + after_pages])
 
-    if set(begin) & set(end):  # [1, 2, 3], [...], [2, 3, 4]
-        begin = sorted(set(begin + end))  # [1, 2, 3, 4]
-        middle, end = [], []
-    elif begin[-1] + 1 == end[0]:  # [1, 2, 3], [...], [4, 5, 6]
-        begin += end  # [1, 2, 3, 4, 5, 6]
-        middle, end = [], []
-    elif set(begin) & set(middle):  # [1, 2, 3], [2, 3, 4], [...]
+    if set(begin) & set(middle):  # [1, 2, 3], [2, 3, 4], [...]
         begin = sorted(set(begin + middle))  # [1, 2, 3, 4]
         middle = []
     elif begin[-1] + 1 == middle[0]:  # [1, 2, 3], [4, 5, 6], [...]
@@ -321,6 +316,13 @@ def zinnia_pagination(context, page, begin_pages=3, end_pages=3,
     elif set(middle) & set(end):  # [...], [17, 18, 19], [18, 19, 20]
         end = sorted(set(middle + end))  # [17, 18, 19, 20]
         middle = []
+
+    if set(begin) & set(end):  # [1, 2, 3], [...], [2, 3, 4]
+        begin = sorted(set(begin + end))  # [1, 2, 3, 4]
+        middle, end = [], []
+    elif begin[-1] + 1 == end[0]:  # [1, 2, 3], [...], [4, 5, 6]
+        begin += end  # [1, 2, 3, 4, 5, 6]
+        middle, end = [], []
 
     return {'template': template,
             'page': page,
@@ -416,6 +418,28 @@ def week_number(date):
     if int(week_number) < 10:
         week_number = week_number[-1]
     return week_number
+
+
+@register.filter
+def comment_admin_urlname(action):
+    """
+    Return the admin URLs for the comment app used.
+    """
+    comment = get_comment_model()
+    return 'admin:%s_%s_%s' % (
+        comment._meta.app_label, comment._meta.model_name,
+        action)
+
+
+@register.filter
+def user_admin_urlname(action):
+    """
+    Return the admin URLs for the user app used.
+    """
+    user = get_user_model()
+    return 'admin:%s_%s_%s' % (
+        user._meta.app_label, user._meta.model_name,
+        action)
 
 
 @register.inclusion_tag('zinnia/tags/dummy.html')

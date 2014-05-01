@@ -60,7 +60,7 @@ Examples
 Take a look at the online demo at: http://demo.django-blog-zinnia.com/
 or you can visit these websites who use Zinnia.
 
-* `Fantomas' side`_  / `Mobile version`_
+* `Fantomas' side`_
 * `Darwin's Weblog`_
 * `ShiningPanda`_
 * `Tryolabs`_
@@ -73,7 +73,8 @@ or you can visit these websites who use Zinnia.
 * `Pana`_
 * `MAGIC Center at RIT`_
 * `Rudolf Steiner School of Kreuzlingen`_
-
+* `Vidzor Studio LLC`_
+* `Bookshadow`_
 
 If you are a proud user of Zinnia, send me the URL of your website and I
 will add it to the list.
@@ -111,11 +112,11 @@ More information and help available at these URLs:
 .. _`Markdown`: http://daringfireball.net/projects/markdown/
 .. _`Textile`: http://redcloth.org/hobix.com/textile/
 .. _`reStructuredText`: http://docutils.sourceforge.net/rst.html
-.. _`Akismet`: http://akismet.com
-.. _`TypePad`: http://antispam.typepad.com/
-.. _`Mollom`: http://mollom.com/
+.. _`Akismet`: https://github.com/Fantomas42/zinnia-spam-checker-akismet
+.. _`TypePad`: https://github.com/Fantomas42/zinnia-spam-checker-akismet#using-typepad-antispam
+.. _`Mollom`: https://github.com/Fantomas42/zinnia-spam-checker-mollom
 .. _`MetaWeblog API`: http://www.xmlrpc.com/metaWeblogApi
-.. _`Bit.ly`: http://docs.django-blog-zinnia.com/en/latest/getting-started/configuration.html#module-zinnia.url_shortener.backends.bitly
+.. _`Bit.ly`: https://github.com/Fantomas42/zinnia-url-shortener-bitly
 .. _`Twitter`: http://docs.django-blog-zinnia.com/en/latest/getting-started/configuration.html#twitter
 .. _`Gravatar`: http://gravatar.com/
 .. _`Django-CMS`: http://docs.django-blog-zinnia.com/en/latest/getting-started/configuration.html#django-cms
@@ -129,7 +130,6 @@ More information and help available at these URLs:
 .. _`Sass3`: http://sass-lang.com/
 .. _`Windows Live Writer`: http://explore.live.com/windows-live-writer
 .. _`Fantomas' side`: http://fantomas.willbreak.it/blog/
-.. _`Mobile version`: http://m.fantomas.willbreak.it/blog/
 .. _`Professional Web Studio`: http://www.professionalwebstudio.com/en/weblog/
 .. _`Tryolabs`: http://www.tryolabs.com/Blog/
 .. _`brainbreach`: http://brainbreach.com/
@@ -142,6 +142,8 @@ More information and help available at these URLs:
 .. _`Pana`: http://chusen87.com/news/
 .. _`MAGIC Center at RIT`: http://magic.rit.edu/
 .. _`Rudolf Steiner School of Kreuzlingen`: http://www.steinerschulekreuzlingen.ch/
+.. _`Vidzor Studio LLC`: http://vidzor.com/blog/
+.. _`Bookshadow`: http://bookshadow.com/weblog/
 .. _`Code repository`: https://github.com/Fantomas42/django-blog-zinnia
 .. _`Documentation`: http://docs.django-blog-zinnia.com/
 .. _`Travis CI server`: http://travis-ci.org/Fantomas42/django-blog-zinnia

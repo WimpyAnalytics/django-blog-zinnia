@@ -73,7 +73,7 @@ process applies. We will add this setting in the project's configuration:
 ::
 
   ZINNIA_ENTRY_DETAIL_TEMPLATES = [
-      ('detail/fullwidth_entry_detail.html', 'Fullwidth template'),
+      ('zinnia/fullwidth_entry_detail.html', 'Fullwidth template'),
   ]
 
 And now we finally create the ``zinnia/fullwidth_entry_detail.html``
@@ -83,76 +83,9 @@ template with this sample of code:
 
   {% extends "zinnia/entry_detail.html" %}
 
-  {% block zinnia-sidebar %}no-sidebar{% endblock %}
+  {% block sidebar-class %}no-sidebar{% endblock %}
 
   {% block sidebar %}{% endblock %}
-
-.. _zinnia-akismet:
-
-Akismet Anti-Spam
-=================
-
-.. module:: zinnia.spam_checker.backends.automattic
-
-If you want to benefit of the Akismet spam protection on your comments,
-it's possible to do it by installing the `akismet`_ Python module, and add
-this setting: ::
-
-  ZINNIA_SPAM_CHECKER_BACKENDS = ('zinnia.spam_checker.backends.automattic',)
-
-.. important:: You need an API key. If you don't have any, get one for free at
-   	       http://akismet.com/signup/ then set it in your project's
-	       settings like this:
-
-::
-
-  AKISMET_SECRET_API_KEY = 'your key'
-
-.. _zinnia-typepad:
-
-TypePad Anti-Spam
-=================
-
-.. module:: zinnia.spam_checker.backends.typepad
-
-It's also possible to benefit of the `TypePad AntiSpam`_ service to fight
-the spam. Like the Akismet protection you need to install the `akismet`_
-Python module.
-
-Then register the TypePad AntiSpam protection with this setting: ::
-
-  ZINNIA_SPAM_CHECKER_BACKENDS = ('zinnia.spam_checker.backends.typepad',)
-
-.. important:: You need an API key. If you don't have any, get one for free at
-	       http://antispam.typepad.com/info/get-api-key.html then set
-	       it in your project's settings like this:
-
-::
-
-  TYPEPAD_SECRET_API_KEY = 'your key'
-
-.. _zinnia-mollom:
-
-Mollom Anti-Spam
-================
-
-.. module:: zinnia.spam_checker.backends.mollom
-
-Another approach to fight the spam is provided by `Mollom`_, Zinnia
-implement a backend to use this spam filtering service. Before configuring
-the service, you need to install the `PyMollom`_ Python library and then
-register the Mollom spam checking protection with this setting: ::
-
-  ZINNIA_SPAM_CHECKER_BACKENDS = ('zinnia.spam_checker.backends.mollom',)
-
-.. important:: You need a private and public keys to use this service.
-               Get a free account at http://mollom.com/pricing then set
-	       your keys in your project's settings like this:
-
-::
-
-  MOLLOM_PUBLIC_KEY = 'your public key'
-  MOLLOM_PRIVATE_KEY = 'your private key'
 
 .. _zinnia-pinging:
 
@@ -173,24 +106,6 @@ setting: ::
 
   ZINNIA_PING_DIRECTORIES = ('http://ping.directory.com/',
                              'http://pong.directory.com/')
-
-.. _zinnia-bitly:
-
-Bit.ly
-======
-
-.. module:: zinnia.url_shortener.backends.bitly
-
-You find http://bit.ly useful and want to use it for your blog entries ?
-
-It's simple, install `django-bitly`_ in your project's settings and add
-these settings: ::
-
-  BITLY_LOGIN = 'your bit.ly login'
-  BITLY_API_KEY = 'your bit.ly api key'
-  ZINNIA_URL_SHORTENER_BACKEND = 'zinnia.url_shortener.backends.bitly'
-
-Zinnia will do the rest.
 
 .. _zinnia-twitter:
 

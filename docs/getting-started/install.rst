@@ -14,8 +14,8 @@ Make sure to install these packages prior to installation :
 * `Python`_ >= 2.6.5
 * `Django`_ >= 1.6
 * `PIL`_ >= 1.1.6 or `Pillow`_ >= 2.0.0
-* `django-mptt`_ >= 0.5.1 < 0.6
-* `django-tagging`_ >= 0.3.1
+* `django-mptt`_ >= 0.5.1
+* `django-tagging`_ >= 0.3.2
 * `beautifulsoup4`_ >= 4.1.3
 
 The packages below are optionnal but needed for run the full test suite or
@@ -23,7 +23,7 @@ migrate the database.
 
 * `pytz`_
 * `South`_ >= 0.7.6
-* `pyparsing`_ >= 1.5.5 < 2.0.0
+* `pyparsing`_ >= 2.0.1
 * `django-xmlrpc`_ >= 0.1.5
 
 Note that all the needed dependencies will be resolved if you install
@@ -105,7 +105,7 @@ URLs
 Add at least these following lines to your project's urls.py in order to
 display the Weblog. ::
 
-  url(r'^weblog/', include('zinnia.urls')),
+  url(r'^weblog/', include('zinnia.urls', namespace='zinnia')),
   url(r'^comments/', include('django.contrib.comments.urls')),
 
 Remember to enable the :mod:`~django.contrib.admin` site in the urls.py of
@@ -115,20 +115,24 @@ Note that the default Zinnia URLset :mod:`zinnia.urls` is calibrated for
 convenient usage, but you can customize your Weblog URLs as you
 want. Here's a custom implementation of the URLs provided by Zinnia: ::
 
-  url(r'^', include('zinnia.urls.capabilities')),
-  url(r'^search/', include('zinnia.urls.search')),
-  url(r'^sitemap/', include('zinnia.urls.sitemap')),
-  url(r'^trackback/', include('zinnia.urls.trackback')),
-  url(r'^blog/tags/', include('zinnia.urls.tags')),
-  url(r'^blog/feeds/', include('zinnia.urls.feeds')),
-  url(r'^blog/random/', include('zinnia.urls.random')),
-  url(r'^blog/authors/', include('zinnia.urls.authors')),
-  url(r'^blog/categories/', include('zinnia.urls.categories')),
-  url(r'^blog/comments/', include('zinnia.urls.comments')),
-  url(r'^blog/', include('zinnia.urls.entries')),
-  url(r'^blog/', include('zinnia.urls.archives')),
-  url(r'^blog/', include('zinnia.urls.shortlink')),
-  url(r'^blog/', include('zinnia.urls.quick_entry')),
+  blog_urls = [
+      url(r'^', include('zinnia.urls.capabilities')),
+      url(r'^search/', include('zinnia.urls.search')),
+      url(r'^sitemap/', include('zinnia.urls.sitemap')),
+      url(r'^trackback/', include('zinnia.urls.trackback')),
+      url(r'^blog/tags/', include('zinnia.urls.tags')),
+      url(r'^blog/feeds/', include('zinnia.urls.feeds')),
+      url(r'^blog/random/', include('zinnia.urls.random')),
+      url(r'^blog/authors/', include('zinnia.urls.authors')),
+      url(r'^blog/categories/', include('zinnia.urls.categories')),
+      url(r'^blog/comments/', include('zinnia.urls.comments')),
+      url(r'^blog/', include('zinnia.urls.entries')),
+      url(r'^blog/', include('zinnia.urls.archives')),
+      url(r'^blog/', include('zinnia.urls.shortlink')),
+      url(r'^blog/', include('zinnia.urls.quick_entry'))
+  ]
+
+  url(r'^', include(blog_urls, namespace='zinnia'))
 
 .. _static-files:
 

@@ -1,5 +1,4 @@
 """Setup script of django-blog-zinnia"""
-import os
 from setuptools import setup
 from setuptools import find_packages
 
@@ -11,8 +10,7 @@ setup(
 
     description='A clear and powerfull weblog application powered with Django',
     long_description='\n'.join([open('README.rst').read(),
-                                open(os.path.join('docs', 'notes',
-                                                  'changelog.rst')).read()]),
+                                open('CHANGELOG').read()]),
     keywords='django, blog, weblog, zinnia, post, news',
 
     author=zinnia.__author__,
@@ -36,7 +34,7 @@ setup(
     zip_safe=False,
     install_requires=['beautifulsoup4>=4.1',
                       'django-mptt>=0.5.1',
-                      'django-tagging>=0.3.1',
+                      'django-tagging>=0.3.2',
                       'django-xmlrpc>=0.1.5',
                       'pyparsing>=2.0.1',
                       'pytz>=2013b']

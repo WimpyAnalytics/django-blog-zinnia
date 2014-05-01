@@ -33,25 +33,27 @@ class EntryAdmin(admin.ModelAdmin):
     """
     form = EntryAdminForm
     date_hierarchy = 'creation_date'
-    fieldsets = ((_('Content'), {'fields': ('title', 'content',
-                                            'image', 'status')}),
-                 (_('Options'), {'fields': ('featured', 'excerpt',
-                                            'content_template',
-                                            'detail_template',
-                                            'related', 'authors',
-                                            'creation_date',
-                                            'start_publication',
-                                            'end_publication'),
-                                 'classes': ('collapse', 'collapse-closed')}),
-                 (_('Privacy'), {'fields': ('password', 'login_required',),
-                                 'classes': ('collapse', 'collapse-closed')}),
-                 (_('Discussions'), {'fields': ('comment_enabled',
-                                                'pingback_enabled',
-                                                'trackback_enabled'),
-                                     'classes': ('collapse',
-                                                 'collapse-closed')}),
-                 (_('Publication'), {'fields': ('categories', 'tags',
-                                                'sites', 'slug')}))
+    fieldsets = (
+        (_('Content'), {
+            'fields': (('title', 'status'), 'content', 'image')}),
+        (_('Publication'), {
+            'fields': (('start_publication', 'end_publication'),
+                       'creation_date', 'sites'),
+            'classes': ('collapse', 'collapse-closed')}),
+        (_('Discussions'), {
+            'fields': ('comment_enabled', 'pingback_enabled',
+                       'trackback_enabled'),
+            'classes': ('collapse', 'collapse-closed')}),
+        (_('Privacy'), {
+            'fields': ('login_required', 'password'),
+            'classes': ('collapse', 'collapse-closed')}),
+        (_('Templates'), {
+            'fields': ('content_template', 'detail_template'),
+            'classes': ('collapse', 'collapse-closed')}),
+        (_('Metadatas'), {
+            'fields': ('featured', 'excerpt', 'authors', 'related'),
+            'classes': ('collapse', 'collapse-closed')}),
+        (None, {'fields': ('categories', 'tags', 'slug')}))
     list_filter = (CategoryListFilter, AuthorListFilter, 'status', 'featured',
                    'login_required', 'comment_enabled', 'pingback_enabled',
                    'trackback_enabled', 'creation_date', 'start_publication',
@@ -82,9 +84,9 @@ class EntryAdmin(admin.ModelAdmin):
         """
         title = _('%(title)s (%(word_count)i words)') % \
             {'title': entry.title, 'word_count': entry.word_count}
-        reaction_count = (entry.comment_count +
-                          entry.pingback_count +
-                          entry.trackback_count)
+        reaction_count = int(entry.comment_count +
+                             entry.pingback_count +
+                             entry.trackback_count)
         if reaction_count:
             return ungettext_lazy(
                 '%(title)s (%(reactions)i reaction)',
@@ -129,7 +131,7 @@ class EntryAdmin(admin.ModelAdmin):
         """
         try:
             return ', '.join(['<a href="%s" target="blank">%s</a>' %
-                              (reverse('zinnia_tag_detail', args=[tag]), tag)
+                              (reverse('zinnia:tag_detail', args=[tag]), tag)
                               for tag in entry.tags_list])
         except NoReverseMatch:
             return entry.tags
@@ -141,7 +143,7 @@ class EntryAdmin(admin.ModelAdmin):
         Return the sites linked in HTML.
         """
         try:
-            index_url = reverse('zinnia_entry_archive_index')
+            index_url = reverse('zinnia:entry_archive_index')
         except NoReverseMatch:
             index_url = ''
         return ', '.join(
@@ -183,7 +185,7 @@ class EntryAdmin(admin.ModelAdmin):
         if entry.pk and not request.user.has_perm('zinnia.can_change_author'):
             form.cleaned_data['authors'] = entry.authors.all()
 
-        if not form.cleaned_data.get('authors'):
+        if not entry.pk and not form.cleaned_data.get('authors'):
             form.cleaned_data['authors'] = Author.objects.filter(
                 pk=request.user.pk)
 

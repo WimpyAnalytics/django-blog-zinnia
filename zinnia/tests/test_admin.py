@@ -87,10 +87,12 @@ class EntryAdminTestCase(BaseAdminTestCase):
                          'My title (2 words)')
         self.entry.comment_count = 1
         self.entry.save()
+        self.entry = Entry.objects.get(pk=self.entry.pk)
         self.assertEqual(self.admin.get_title(self.entry),
                          'My title (2 words) (1 reaction)')
         self.entry.pingback_count = 1
         self.entry.save()
+        self.entry = Entry.objects.get(pk=self.entry.pk)
         self.assertEqual(self.admin.get_title(self.entry),
                          'My title (2 words) (2 reactions)')
 
@@ -179,8 +181,11 @@ class EntryAdminTestCase(BaseAdminTestCase):
         self.entry.status = PUBLISHED
         self.admin.save_model(self.request, self.entry,
                               form, False)
-        self.assertEqual(len(form.cleaned_data['authors']), 1)
+        self.assertEqual(len(form.cleaned_data['authors']), 0)
         self.assertEqual(self.entry.excerpt, self.entry.content)
+        self.admin.save_model(self.request, Entry(),
+                              form, False)
+        self.assertEqual(len(form.cleaned_data['authors']), 1)
 
     def test_queryset(self):
         user = Author.objects.create_user(
