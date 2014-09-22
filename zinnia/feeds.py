@@ -6,6 +6,7 @@ try:
 except ImportError:  # Python 2
     from urlparse import urljoin
 
+from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
@@ -106,7 +107,7 @@ class EntryFeed(ZinniaFeed):
         Return the first author's email.
         Should not be called if self.item_author_name has returned None.
         """
-        return self.item_author.email
+        return self.item_author.user.email
 
     def item_author_link(self, item):
         """
@@ -229,7 +230,10 @@ class AuthorEntries(EntryFeed):
         """
         Retrieve the author by his username.
         """
-        return get_object_or_404(Author, **{Author.USERNAME_FIELD: username})
+        user_model = get_user_model()
+        user = get_object_or_404(user_model, **{user_model.USERNAME_FIELD: username})
+        author = Author.objects.get_or_create(user=user)[0]
+        return author
 
     def items(self, obj):
         """
