@@ -1,6 +1,7 @@
 """Test cases for Zinnia's long_enought spam checker"""
 from django.test import TestCase
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.contrib.auth.tests.utils import skipIfCustomUser
 
@@ -22,8 +23,9 @@ class LongEnoughTestCase(TestCase):
         disconnect_entry_signals()
         disconnect_discussion_signals()
         self.site = Site.objects.get_current()
-        self.author = Author.objects.create(username='admin',
-                                            email='admin@example.com')
+        self.user = get_user_model().objects.create(username='admin',
+                                                    email='admin@example.com')
+        self.author = Author.objects.create(user=self.user)
 
         params = {'title': 'My test entry',
                   'content': 'My test entry',
@@ -35,7 +37,7 @@ class LongEnoughTestCase(TestCase):
 
     def test_long_enough(self):
         comment = comments.get_model().objects.create(
-            comment='My Comment', user=self.author, is_public=True,
+            comment='My Comment', user=self.author.user, is_public=True,
             content_object=self.entry, site=self.site,
             submit_date=timezone.now())
         self.assertEqual(backend(comment, self.entry, {}), True)
