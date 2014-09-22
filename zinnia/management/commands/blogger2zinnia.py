@@ -11,12 +11,14 @@ from django.utils.text import Truncator
 from django.utils.html import strip_tags
 from django.utils.six.moves import input
 from django.utils.encoding import smart_str
+from django.utils.encoding import smart_unicode
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from django.core.management.base import CommandError
 from django.core.management.base import NoArgsCommand
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.comments import get_model as get_comment_model
+
+from django_comments import get_model as get_comment_model
 
 from zinnia import __version__
 from zinnia.models.entry import Entry
@@ -31,8 +33,10 @@ Comment = get_comment_model()
 
 
 class Command(NoArgsCommand):
-    """Command object for importing a Blogger blog
-    into Zinnia via Google's gdata API."""
+    """
+    Command object for importing a Blogger blog
+    into Zinnia via Google's gdata API.
+    """
     help = 'Import a Blogger blog into Zinnia.'
 
     option_list = NoArgsCommand.option_list + (
@@ -53,7 +57,9 @@ class Command(NoArgsCommand):
     SITE = Site.objects.get_current()
 
     def __init__(self):
-        """Init the Command and add custom styles"""
+        """
+        Init the Command and add custom styles.
+        """
         super(Command, self).__init__()
         self.style.TITLE = self.style.SQL_FIELD
         self.style.STEP = self.style.SQL_COLTYPE
@@ -62,7 +68,9 @@ class Command(NoArgsCommand):
         disconnect_discussion_signals()
 
     def write_out(self, message, verbosity_level=1):
-        """Convenient method for outputing"""
+        """
+        Convenient method for outputing.
+        """
         if self.verbosity and self.verbosity >= verbosity_level:
             sys.stdout.write(smart_str(message))
             sys.stdout.flush()
@@ -102,7 +110,7 @@ class Command(NoArgsCommand):
         if default_author:
             try:
                 self.default_author = Author.objects.get(
-                    username=default_author)
+                    **{Author.USERNAME_FIELD: self.default_author})
             except Author.DoesNotExist:
                 raise CommandError(
                     'Invalid Zinnia username for default author "%s"' %
@@ -162,7 +170,7 @@ class Command(NoArgsCommand):
             title = post.title.text or ''
             content = post.content.text or ''
             excerpt = self.auto_excerpt and Truncator(
-                strip_tags(content)).words(50) or ''
+                strip_tags(smart_unicode(content))).words(50) or ''
             slug = slugify(post.title.text or get_post_id(post))[:255]
             try:
                 entry = Entry.objects.get(creation_date=creation_date,
@@ -173,8 +181,6 @@ class Command(NoArgsCommand):
                 entry = Entry(status=status, title=title, content=content,
                               creation_date=creation_date, slug=slug,
                               excerpt=excerpt)
-                if self.default_author:
-                    entry.author = self.default_author
                 entry.tags = ','.join([slugify(cat.term) for
                                        cat in post.category])
                 entry.last_update = convert_blogger_timestamp(

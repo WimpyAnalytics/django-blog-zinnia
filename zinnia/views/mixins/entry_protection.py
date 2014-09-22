@@ -2,25 +2,47 @@
 from django.contrib.auth.views import login
 
 
-class EntryProtectionMixin(object):
-    """Mixin returning a login view if the current
-    entry need authentication and password view
-    if the entry is protected by a password"""
-    error = False
-    session_key = 'zinnia_entry_%s_password'
+class LoginMixin(object):
+    """
+    Mixin implemeting a login view
+    configurated for Zinnia.
+    """
 
     def login(self):
-        """Return the login view"""
+        """
+        Return the login view.
+        """
         return login(self.request, 'zinnia/login.html')
 
+
+class PasswordMixin(object):
+    """
+    Mixin implementing a password view
+    configurated for Zinnia.
+    """
+    error = False
+
     def password(self):
-        """Return the password form"""
+        """
+        Return the password view.
+        """
         return self.response_class(request=self.request,
                                    template='zinnia/password.html',
                                    context={'error': self.error})
 
+
+class EntryProtectionMixin(LoginMixin, PasswordMixin):
+    """
+    Mixin returning a login view if the current
+    entry need authentication and password view
+    if the entry is protected by a password.
+    """
+    session_key = 'zinnia_entry_%s_password'
+
     def get(self, request, *args, **kwargs):
-        """Do the login protection"""
+        """
+        Do the login and password protection.
+        """
         response = super(EntryProtectionMixin, self).get(
             request, *args, **kwargs)
         if self.object.login_required and not request.user.is_authenticated():
@@ -31,7 +53,9 @@ class EntryProtectionMixin(object):
         return response
 
     def post(self, request, *args, **kwargs):
-        """Do the login protection"""
+        """
+        Do the login and password protection.
+        """
         self.object = self.get_object()
         self.login()
         if self.object.password:

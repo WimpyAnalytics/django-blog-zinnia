@@ -4,7 +4,7 @@
     color: $rebase0;
     background-color: $rebase03;
     // Typography
-    #{headers(all)} { color: $rebase2; }
+    h1, h2, h3, h4, h5, h6 { color: $rebase2; }
     a { @include link-colors($rebase1, $rebase2,
                              $rebase2, $rebase1, $rebase1); }
     blockquote, pre { background-color: $rebase02;
@@ -36,12 +36,13 @@
     // Header
     #header {
       border-bottom: 1px solid $rebase01;
-      h1 { text-shadow: 2px 2px 2px $rebase01; }
+      h1 { text-shadow: 2px 2px 2px $rebase00; }
+      blockquote { color: $rebase1; }
     }
     // Forms
     fieldset { border: 1px solid $rebase01; }
     legend, caption { color: $rebase1; }
-    input[type=email], input[type=text], input[type=password],
+    input[type=url], input[type=email], input[type=text], input[type=password],
     textarea {
       color: $rebase1;
       background-color: $rebase02;
@@ -63,7 +64,7 @@
     }
     // Sidebar
     #sidebar h3 { background-color: $rebase02; }
-    table.calendar {
+    [class*='entries-calendar'] {
       th, tfoot td {
         color: $rebase1;
         background: none repeat scroll 0 0 $rebase02;
@@ -73,6 +74,7 @@
     }
     // Pagination
     .paginator {
+      border-top: 1px solid $rebase01;
       li {
         border: solid 1px $rebase01;
         &.page:hover {
@@ -81,10 +83,14 @@
         }
       }
     }
+    // Content related
+    &.entry-list .hfeed > h2 {
+      border-top: 1px solid $rebase01;
+    }
 }
 
 @mixin accentize($accent) {
-    #{headers(all)} { color: $accent; }
+    h1, h2, h3, h4, h5, h6 { color: $accent; }
     a { @include link-colors($accent, lighten($accent, 5%),
                              lighten(adjust-hue($accent, 75deg), 10%),
                              $accent, $accent); }
@@ -99,7 +105,7 @@
 &.default {
   @include rebase(#fff, #eee, #ddd, #ccc,
                   #333, #666, #333, #000);
-  background: transparent image-url("background.gif") repeat-x scroll left top;
+  background: transparent url("../img/background.gif") repeat-x scroll left top;
 }
 
 &.light {

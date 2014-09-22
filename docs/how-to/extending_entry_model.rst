@@ -77,8 +77,8 @@ the :class:`Entry` model in :file:`models.py`. ::
   class EntryGallery(AbstractEntry):
       gallery = models.ForeignKey(Gallery)
 
-      def __unicode__(self):
-          return u'EntryGallery %s' % self.title
+      def __str__(self):
+          return 'EntryGallery %s' % self.title
 
       class Meta(AbstractEntry.Meta):
           abstract = True
@@ -145,8 +145,8 @@ take advantage of all the abstracts classes provided to build the
       image = models.ForeignKey(Picture)
       gallery = models.ForeignKey(Gallery)
 
-      def __unicode__(self):
-          return u'EntryGallery %s' % self.title
+      def __str__(self):
+          return 'EntryGallery %s' % self.title
 
       class Meta(entry.CoreEntry.Meta):
           abstract = True
@@ -228,7 +228,7 @@ for adding the gallery field: ::
     # In our case we put the gallery field
     # into the 'Content' fieldset
     fieldsets = ((_('Content'), {'fields': (
-      'title', 'content', 'image', 'status', 'gallery')}),) + \
+      ('title', 'status'), 'content', 'image', 'gallery')}),) + \
       EntryAdmin.fieldsets[1:]
 
   # Unregister the default EntryAdmin
@@ -250,4 +250,4 @@ For more information you can see another implementation example in the
 
 .. _`South`: http://south.aeracode.org/
 .. _`SOUTH_MIGRATION_MODULES`: http://south.readthedocs.org/en/latest/settings.html#south-migration-modules
-.. _`cmsplugin-zinnia`: https://github.com/Fantomas42/cmsplugin-zinnia
+.. _`cmsplugin-zinnia`: https://github.com/django-blog-zinnia/cmsplugin-zinnia

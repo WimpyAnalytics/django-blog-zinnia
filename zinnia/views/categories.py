@@ -1,4 +1,5 @@
 """Views for Zinnia categories"""
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.views.generic.list import ListView
 from django.views.generic.list import BaseListView
@@ -10,16 +11,25 @@ from zinnia.views.mixins.prefetch_related import PrefetchCategoriesAuthorsMixin
 
 
 def get_category_or_404(path):
-    """Retrieve a Category instance by a path"""
+    """
+    Retrieve a Category instance by a path.
+    """
     path_bits = [p for p in path.split('/') if p]
     return get_object_or_404(Category, slug=path_bits[-1])
 
 
 class CategoryList(ListView):
     """
-    View returning a list of all the categories.
+    View returning a list of published categories.
     """
-    queryset = Category.objects.all()
+
+    def get_queryset(self):
+        """
+        Return a queryset of published categories,
+        with a count of their entries published.
+        """
+        return Category.published.all().annotate(
+            count_entries_published=Count('entries'))
 
 
 class BaseCategoryDetail(object):

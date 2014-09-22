@@ -4,7 +4,8 @@ Contributing to Zinnia
 
 .. highlightlang:: console
 
-Zinnia is an open-source project, so yours contributions are welcomed and needed.
+Zinnia is an open-source project, so yours contributions are welcomed and
+needed.
 
 .. _writing-code:
 
@@ -19,14 +20,16 @@ code ? You are welcome.
 Process
 -------
 
-#. `Fork`_ the code on Github.
-#. Clone a local copy of your fork.
+#. `Fork`_ and clone the repository on Github.
+#. Create a branch based on ``develop``.
 #. Write tests.
 #. Develop your code.
-#. Test your new code.
 #. Update the documentation if needed.
-#. Commit and push your changes.
-#. Open a pull request.
+#. Push your branch and open a pull-request.
+
+Once the pull-request is open, the continuous integration server will build
+your pull-request. If the build is passing, your contribution has great
+chances to be integrated quickly.
 
 .. _code-conventions:
 
@@ -70,9 +73,10 @@ to understand you. We don’t care about style or correctness.
 
 The documentation should :
 
-* Use **Sphinx** and **restructuredText**.
-* Use **.rst** as file extension.
 * Be written in English.
+* Follow the 80 column rule.
+* Use **.rst** as file extension.
+* Use **Sphinx** and **restructuredText**.
 * Be accessible. You should assume the reader to be moderately familiar
   with Python and Django, but not anything else.
 
@@ -89,6 +93,48 @@ source code.  Essentially, you will fork the project on github, make your
 changes to the documentation, commit them, and submit a pull request.
 
 See :ref:`code process<code-process>` for more details.
+
+.. _writing-css:
+
+Writing CSS
+===========
+
+You want to contribute to the default stylesheets provided by Zinnia ?
+
+If you take a look at :file:`zinnia/static/zinnia/css/screen.css` you will
+probably notice that the CSS is not edited manually. It has been generated
+from `Sass`_ files and so it is good pratice not to edit this file
+directly.
+
+Aside of ``zinnia/static/zinnia/css`` directory, you can see another
+directory named ``sass`` which is organized like this: ::
+
+  sass/
+  |-- config/
+  |-- mixins/
+  |-- partials/
+  `-- screen.scss
+
+The ``partials`` folder contains all the **partials** used to build the
+CSS, the ``mixins`` folder contains **reusable mixins** like the tag-cloud
+and finally the ``config`` folder contains all the **configurable
+variables**. For example the :file:`screen.scss` file will include at the
+end all the files who belong in these directories into a single compiled
+CSS document, named :file:`screen.css`.
+
+Actually the Sass files are compiled with the `libsass`_ implementation
+using a `Gulp`_ script.
+
+To install and use Gulp, you need to have a recent version of `Node.js`_
+and install the dependencies like this in the root directory of Zinnia: ::
+
+  $ npm install .
+
+Then you just have to run the ``gulp`` command and start to edit the Sass
+files to customize the stylesheets provided by Zinnia.
+
+Once you are done, open a new pull-request on Github with your commited
+changes.
 
 .. _writing-translations:
 
@@ -107,4 +153,8 @@ The translations hosted on Transifex.net will be pulled periodically in the
 repository, but if you are in a hurry, `send me a message`_.
 
 .. _`Fork`: https://github.com/Fantomas42/django-blog-zinnia/fork
+.. _`Sass`: http://sass-lang.com/
+.. _`libsass`: http://libsass.org/
+.. _`Gulp`: http://gulpjs.com/
+.. _`Node.js`: http://nodejs.org/
 .. _`send me a message`: https://github.com/Fantomas42

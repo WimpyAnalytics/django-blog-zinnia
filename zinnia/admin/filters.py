@@ -1,11 +1,12 @@
 """Filters for Zinnia admin"""
+from django.db.models import Count
+from django.utils.encoding import smart_text
 from django.contrib.admin import SimpleListFilter
 from django.utils.translation import ungettext_lazy
 from django.utils.translation import ugettext_lazy as _
 
 from zinnia.models.author import Author
 from zinnia.models.category import Category
-from django.db.models import Count
 
 
 class RelatedPublishedFilter(SimpleListFilter):
@@ -20,15 +21,16 @@ class RelatedPublishedFilter(SimpleListFilter):
         Return published objects with the number of entries.
         """
         active_objects = self.model.published.all().annotate(
-            number_of_entries=Count('entries'))
+            count_entries_published=Count('entries')).order_by(
+            '-count_entries_published', '-pk')
         for active_object in active_objects:
             yield (
                 str(active_object.pk), ungettext_lazy(
                     '%(item)s (%(count)i entry)',
                     '%(item)s (%(count)i entries)',
-                    active_object.number_of_entries) % {
-                    'item': active_object.__unicode__(),
-                    'count': active_object.number_of_entries})
+                    active_object.count_entries_published) % {
+                    'item': smart_text(active_object),
+                    'count': active_object.count_entries_published})
 
     def queryset(self, request, queryset):
         """

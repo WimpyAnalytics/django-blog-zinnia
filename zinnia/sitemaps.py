@@ -14,26 +14,36 @@ from zinnia.settings import PROTOCOL
 
 
 class ZinniaSitemap(Sitemap):
-    """Base Sitemap class for Zinnia"""
+    """
+    Base Sitemap class for Zinnia.
+    """
     protocol = PROTOCOL
 
 
 class EntrySitemap(ZinniaSitemap):
-    """Sitemap for entries"""
+    """
+    Sitemap for entries.
+    """
     priority = 0.5
     changefreq = 'weekly'
 
     def items(self):
-        """Return published entries"""
+        """
+        Return published entries.
+        """
         return Entry.published.all()
 
     def lastmod(self, obj):
-        """Return last modification of an entry"""
+        """
+        Return last modification of an entry.
+        """
         return obj.last_update
 
 
 class EntryRelatedSitemap(ZinniaSitemap):
-    """Sitemap for models related to Entries"""
+    """
+    Sitemap for models related to Entries.
+    """
     model = None
     changefreq = 'monthly'
 
@@ -54,8 +64,9 @@ class EntryRelatedSitemap(ZinniaSitemap):
         with the number of entries and the latest modification date.
         """
         return self.model.published.annotate(
-            count_entries=Count('entries')).annotate(
-            last_update=Max('entries__last_update'))
+            count_entries_published=Count('entries')).annotate(
+            last_update=Max('entries__last_update')).order_by(
+            '-count_entries_published', '-last_update', '-pk')
 
     def cache_infos(self, queryset):
         """
@@ -64,7 +75,8 @@ class EntryRelatedSitemap(ZinniaSitemap):
         """
         self.cache = {}
         for item in queryset:
-            self.cache[item.pk] = (item.count_entries, item.last_update)
+            self.cache[item.pk] = (item.count_entries_published,
+                                   item.last_update)
 
     def set_max_entries(self):
         """
@@ -90,17 +102,23 @@ class EntryRelatedSitemap(ZinniaSitemap):
 
 
 class CategorySitemap(EntryRelatedSitemap):
-    """Sitemap for categories"""
+    """
+    Sitemap for categories.
+    """
     model = Category
 
 
 class AuthorSitemap(EntryRelatedSitemap):
-    """Sitemap for authors"""
+    """
+    Sitemap for authors.
+    """
     model = Author
 
 
 class TagSitemap(EntryRelatedSitemap):
-    """Sitemap for tags"""
+    """
+    Sitemap for tags.
+    """
 
     def get_queryset(self):
         """
@@ -117,13 +135,14 @@ class TagSitemap(EntryRelatedSitemap):
         """
         self.cache = {}
         for item in queryset:
-            # If the sitemap is going to be too slow,
-            # don't hesitate to do this :
-            # self.cache[item.pk] = (item.count, None)
+            # If the sitemap is too slow, don't hesitate to do this :
+            #   self.cache[item.pk] = (item.count, None)
             self.cache[item.pk] = (
                 item.count, TaggedItem.objects.get_by_model(
                     self.entries_qs, item)[0].last_update)
 
     def location(self, item):
-        """Return URL of the Tag"""
-        return reverse('zinnia_tag_detail', args=[item.name])
+        """
+        Return URL of the tag.
+        """
+        return reverse('zinnia:tag_detail', args=[item.name])

@@ -1,6 +1,8 @@
 """WordPress to Zinnia command module"""
 import os
 import sys
+import pytz
+
 from datetime import datetime
 from optparse import make_option
 from xml.etree import ElementTree as ET
@@ -19,10 +21,11 @@ from django.db.utils import IntegrityError
 from django.utils.encoding import smart_str
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
-from django.contrib import comments
 from django.core.management.base import CommandError
 from django.core.management.base import LabelCommand
 from django.core.files.temp import NamedTemporaryFile
+
+import django_comments as comments
 
 from tagging.models import Tag
 
@@ -40,8 +43,10 @@ WP_NS = 'http://wordpress.org/export/%s/'
 
 
 class Command(LabelCommand):
-    """Command object for importing a WordPress blog
-    into Zinnia via a WordPress eXtended RSS (WXR) file."""
+    """
+    Command object for importing a WordPress blog
+    into Zinnia via a WordPress eXtended RSS (WXR) file.
+    """
     help = 'Import a Wordpress blog into Zinnia.'
     label = 'WXR file'
     args = 'wordpress.xml'
@@ -64,7 +69,9 @@ class Command(LabelCommand):
                       'private': PUBLISHED}
 
     def __init__(self):
-        """Init the Command and add custom styles"""
+        """
+        Init the Command and add custom styles.
+        """
         super(Command, self).__init__()
         self.style.TITLE = self.style.SQL_FIELD
         self.style.STEP = self.style.SQL_COLTYPE
@@ -73,7 +80,9 @@ class Command(LabelCommand):
         disconnect_discussion_signals()
 
     def write_out(self, message, verbosity_level=1):
-        """Convenient method for outputing"""
+        """
+        Convenient method for outputing.
+        """
         if self.verbosity and self.verbosity >= verbosity_level:
             sys.stdout.write(smart_str(message))
             sys.stdout.flush()
@@ -86,7 +95,7 @@ class Command(LabelCommand):
         if self.default_author:
             try:
                 self.default_author = Author.objects.get(
-                    username=self.default_author)
+                    **{Author.USERNAME_FIELD: self.default_author})
             except Author.DoesNotExist:
                 raise CommandError('Invalid username for default author')
 
@@ -106,8 +115,10 @@ class Command(LabelCommand):
         self.import_entries(tree.findall('channel/item'))
 
     def guess_wxr_version(self, tree):
-        """We will try to guess the wxr version used
-        to complete the wordpress xml namespace name"""
+        """
+        We will try to guess the wxr version used
+        to complete the wordpress xml namespace name.
+        """
         for v in ('1.2', '1.1', '1.0'):
             try:
                 tree.find('channel/{%s}wxr_version' % (WP_NS % v)).text
@@ -117,9 +128,11 @@ class Command(LabelCommand):
         raise CommandError('Cannot resolve the wordpress namespace')
 
     def import_authors(self, tree):
-        """Retrieve all the authors used in posts
+        """
+        Retrieve all the authors used in posts
         and convert it to new or existing author and
-        return the conversion"""
+        return the conversion.
+        """
         self.write_out(self.style.STEP('- Importing authors\n'))
 
         post_authors = set()
@@ -141,7 +154,9 @@ class Command(LabelCommand):
         return authors
 
     def migrate_author(self, author_name):
-        """Handle actions for migrating the authors"""
+        """
+        Handle actions for migrating the authors.
+        """
         action_text = "The author '%s' needs to be migrated to an user:\n"\
                       "1. Use an existing user ?\n"\
                       "2. Create a new user ?\n"\
@@ -153,7 +168,7 @@ class Command(LabelCommand):
         if selection == '1':
             users = Author.objects.all()
             if users.count() == 1:
-                username = users[0].username
+                username = users[0].get_username()
                 preselected_user = username
                 usernames = [username]
                 usernames_display = ['[%s]' % username]
@@ -162,7 +177,7 @@ class Command(LabelCommand):
                 usernames_display = []
                 preselected_user = None
                 for user in users:
-                    username = user.username
+                    username = user.get_username()
                     if username == author_name:
                         usernames_display.append('[%s]' % username)
                         preselected_user = username
@@ -183,7 +198,7 @@ class Command(LabelCommand):
                     break
                 if user_selected.strip() == 'back':
                     return self.migrate_author(author_name)
-            return users.get(username=user_selected)
+            return users.get(**{users[0].USERNAME_FIELD: user_selected})
         else:
             create_text = "2. Please type the email of " \
                           "the '%s' user or 'back': " % author_name
@@ -193,13 +208,16 @@ class Command(LabelCommand):
             try:
                 return Author.objects.create_user(author_name, author_mail)
             except IntegrityError:
-                return Author.objects.get(username=author_name)
+                return Author.objects.get(
+                    **{Author.USERNAME_FIELD: author_name})
 
     def import_categories(self, category_nodes):
-        """Import all the categories from 'wp:category' nodes,
+        """
+        Import all the categories from 'wp:category' nodes,
         because categories in 'item' nodes are not necessarily
         all the categories and returning it in a dict for
-        database optimizations."""
+        database optimizations.
+        """
         self.write_out(self.style.STEP('- Importing categories\n'))
 
         categories = {}
@@ -221,10 +239,12 @@ class Command(LabelCommand):
         return categories
 
     def import_tags(self, tag_nodes):
-        """Import all the tags form 'wp:tag' nodes,
+        """
+        Import all the tags form 'wp:tag' nodes,
         because tags in 'item' nodes are not necessarily
         all the tags, then use only the nicename, because it's like
-        a slug and the true tag name may be not valid for url usage."""
+        a slug and the true tag name may be not valid for url usage.
+        """
         self.write_out(self.style.STEP('- Importing tags\n'))
         for tag_node in tag_nodes:
             tag_name = tag_node.find(
@@ -234,8 +254,10 @@ class Command(LabelCommand):
             self.write_out(self.style.ITEM('OK\n'))
 
     def get_entry_tags(self, categories):
-        """Return a list of entry's tags,
-        by using the nicename for url compatibility"""
+        """
+        Return a list of entry's tags,
+        by using the nicename for url compatibility.
+        """
         tags = []
         for category in categories:
             domain = category.attrib.get('domain', 'category')
@@ -244,8 +266,10 @@ class Command(LabelCommand):
         return tags
 
     def get_entry_categories(self, category_nodes):
-        """Return a list of entry's categories
-        based of imported categories"""
+        """
+        Return a list of entry's categories
+        based on imported categories.
+        """
         categories = []
         for category_node in category_nodes:
             domain = category_node.attrib.get('domain')
@@ -254,17 +278,21 @@ class Command(LabelCommand):
         return categories
 
     def import_entry(self, title, content, item_node):
-        """Importing an entry but some data are missing like
+        """
+        Importing an entry but some data are missing like
         related entries, start_publication and end_publication.
         start_publication and creation_date will use the same value,
-        wich is always in Wordpress $post->post_date"""
+        wich is always in Wordpress $post->post_date.
+        """
         creation_date = datetime.strptime(
-            item_node.find('{%s}post_date' % WP_NS).text, '%Y-%m-%d %H:%M:%S')
+            item_node.find('{%s}post_date_gmt' % WP_NS).text,
+            '%Y-%m-%d %H:%M:%S')
         if settings.USE_TZ:
-            creation_date = timezone.make_aware(creation_date, timezone.utc)
+            creation_date = timezone.make_aware(
+                creation_date, pytz.timezone('GMT'))
 
         excerpt = strip_tags(item_node.find(
-            '{%sexcerpt/}encoded' % WP_NS).text)
+            '{%sexcerpt/}encoded' % WP_NS).text or '')
         if not excerpt:
             if self.auto_excerpt:
                 excerpt = Truncator(strip_tags(content)).words(50)
@@ -314,9 +342,11 @@ class Command(LabelCommand):
                 return meta.find('{%s}meta_value' % WP_NS).text
 
     def import_entries(self, items):
-        """Loops over items and find entry to import,
+        """
+        Loops over items and find entry to import,
         an entry need to have 'post_type' set to 'post' and
-        have content."""
+        have content.
+        """
         self.write_out(self.style.STEP('- Importing entries\n'))
 
         for item_node in items:
@@ -359,8 +389,10 @@ class Command(LabelCommand):
                 self.write_out(self.style.ITEM('OK\n'))
 
     def import_comments(self, entry, comment_nodes):
-        """Loops over comments nodes and import then
-        in django.contrib.comments"""
+        """
+        Loops over comments nodes and import then
+        in django_comments.
+        """
         for comment_node in comment_nodes:
             is_pingback = comment_node.find(
                 '{%s}comment_type' % WP_NS).text == PINGBACK
@@ -378,10 +410,11 @@ class Command(LabelCommand):
                 return
 
             submit_date = datetime.strptime(
-                comment_node.find('{%s}comment_date' % WP_NS).text,
+                comment_node.find('{%s}comment_date_gmt' % WP_NS).text,
                 '%Y-%m-%d %H:%M:%S')
             if settings.USE_TZ:
-                submit_date = timezone.make_aware(submit_date, timezone.utc)
+                submit_date = timezone.make_aware(submit_date,
+                                                  pytz.timezone('GMT'))
 
             approvation = comment_node.find(
                 '{%s}comment_approved' % WP_NS).text
@@ -404,7 +437,7 @@ class Command(LabelCommand):
                 'comment': content,
                 'submit_date': submit_date,
                 'ip_address': comment_node.find(
-                    '{%s}comment_author_IP' % WP_NS).text or '',
+                    '{%s}comment_author_IP' % WP_NS).text or None,
                 'is_public': is_public,
                 'is_removed': is_removed, }
             comment = comments.get_model()(**comment_dict)

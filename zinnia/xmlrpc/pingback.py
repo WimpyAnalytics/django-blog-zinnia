@@ -12,7 +12,6 @@ except ImportError:  # Python 2
 
 from django.utils import six
 from django.utils import timezone
-from django.contrib import comments
 from django.utils.html import strip_tags
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import resolve
@@ -20,8 +19,11 @@ from django.core.urlresolvers import Resolver404
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 
-from bs4 import BeautifulSoup
+import django_comments as comments
+
 from django_xmlrpc.decorators import xmlrpc_func
+
+from bs4 import BeautifulSoup
 
 from zinnia.models.entry import Entry
 from zinnia.flags import PINGBACK
@@ -38,14 +40,16 @@ PINGBACK_ALREADY_REGISTERED = 48
 
 
 def generate_pingback_content(soup, target, max_length, trunc_char='...'):
-    """Generate a description text for the pingback"""
+    """
+    Generate a description text for the pingback.
+    """
     link = soup.find('a', href=target)
 
     content = strip_tags(six.text_type(link.findParent()))
     index = content.index(link.string)
 
     if len(content) > max_length:
-        middle = max_length / 2
+        middle = max_length // 2
         start = index - middle
         end = index + middle
 
@@ -64,23 +68,27 @@ def generate_pingback_content(soup, target, max_length, trunc_char='...'):
 
 @xmlrpc_func(returns='string', args=['string', 'string'])
 def pingback_ping(source, target):
-    """pingback.ping(sourceURI, targetURI) => 'Pingback message'
+    """
+    pingback.ping(sourceURI, targetURI) => 'Pingback message'
 
     Notifies the server that a link has been added to sourceURI,
     pointing to targetURI.
 
-    See: http://hixie.ch/specs/pingback/pingback-1.0"""
+    See: http://hixie.ch/specs/pingback/pingback-1.0
+    """
     try:
         if source == target:
             return UNDEFINED_ERROR
 
         site = Site.objects.get_current()
         try:
-            document = ''.join(urlopen(source).readlines())
+            document = ''.join(map(
+                lambda byte_line: byte_line.decode('utf-8'),
+                urlopen(source).readlines()))
         except (HTTPError, URLError):
             return SOURCE_DOES_NOT_EXIST
 
-        if not target in document:
+        if target not in document:
             return SOURCE_DOES_NOT_LINK
 
         scheme, netloc, path, query, fragment = urlsplit(target)
@@ -104,7 +112,7 @@ def pingback_ping(source, target):
             return TARGET_IS_NOT_PINGABLE
 
         soup = BeautifulSoup(document)
-        title = soup.find('title')
+        title = six.text_type(soup.find('title'))
         title = title and strip_tags(title) or _('No title')
         description = generate_pingback_content(soup, target,
                                                 PINGBACK_CONTENT_LENGTH)
@@ -127,11 +135,13 @@ def pingback_ping(source, target):
 
 @xmlrpc_func(returns='string[]', args=['string'])
 def pingback_extensions_get_pingbacks(target):
-    """pingback.extensions.getPingbacks(url) => '[url, url, ...]'
+    """
+    pingback.extensions.getPingbacks(url) => '[url, url, ...]'
 
     Returns an array of URLs that link to the specified url.
 
-    See: http://www.aquarionics.com/misc/archives/blogite/0198.html"""
+    See: http://www.aquarionics.com/misc/archives/blogite/0198.html
+    """
     site = Site.objects.get_current()
 
     scheme, netloc, path, query, fragment = urlsplit(target)

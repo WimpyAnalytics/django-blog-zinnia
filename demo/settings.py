@@ -34,6 +34,8 @@ LANGUAGES = (
     ('es', gettext('Spanish')),
     ('it', gettext('Italian')),
     ('nl', gettext('Dutch')),
+    ('sl', gettext('Slovenian')),
+    ('bg', gettext('Bulgarian')),
     ('hu', gettext('Hungarian')),
     ('cs', gettext('Czech')),
     ('sk', gettext('Slovak')),
@@ -41,12 +43,16 @@ LANGUAGES = (
     ('ru', gettext('Russian')),
     ('pl', gettext('Polish')),
     ('eu', gettext('Basque')),
+    ('he', gettext('Hebrew')),
     ('ca', gettext('Catalan')),
     ('tr', gettext('Turkish')),
     ('sv', gettext('Swedish')),
+    ('is', gettext('Icelandic')),
     ('hr_HR', gettext('Croatian')),
     ('pt_BR', gettext('Brazilian Portuguese')),
-    ('fi_FI', gettext('Finnish (Finland)')),
+    ('fa_IR', gettext('Persian')),
+    ('fi_FI', gettext('Finnish')),
+    ('uk_UA', gettext('Ukrainian')),
     ('zh_CN', gettext('Simplified Chinese')),
 )
 
@@ -56,7 +62,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
+    'django.contrib.admindocs.middleware.XViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
@@ -66,7 +72,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.i18n',
     'django.core.context_processors.request',
-    'django.core.context_processors.media',
     'django.contrib.messages.context_processors.messages',
     'zinnia.context_processors.version',
 )
@@ -74,7 +79,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.sitemaps',
-    'django.contrib.comments',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -82,10 +86,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.staticfiles',
-    'mptt',
-    'zinnia',
-    'tagging',
+    'django_comments',
     'django_xmlrpc',
+    'mptt',
+    'south',
+    'tagging',
+    'zinnia'
 )
 
 from zinnia.xmlrpc import ZINNIA_XMLRPC_METHODS

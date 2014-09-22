@@ -1,16 +1,15 @@
 """Base entry models for Zinnia"""
-from __future__ import unicode_literals
-
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.html import linebreaks
 from django.contrib.sites.models import Site
-from django.contrib import comments
-from django.contrib.comments.models import CommentFlag
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
+
+import django_comments as comments
+from django_comments.models import CommentFlag
 
 from tagging.fields import TagField
 from tagging.utils import parse_tag_input
@@ -53,14 +52,17 @@ class CoreEntry(models.Model):
         help_text=_("Used to build the entry's URL."))
 
     status = models.IntegerField(
-        _('status'), choices=STATUS_CHOICES, default=DRAFT)
+        _('status'), db_index=True,
+        choices=STATUS_CHOICES, default=DRAFT)
 
     start_publication = models.DateTimeField(
-        _('start publication'), blank=True, null=True,
+        _('start publication'),
+        db_index=True, blank=True, null=True,
         help_text=_('Start date of publication.'))
 
     end_publication = models.DateTimeField(
-        _('end publication'), blank=True, null=True,
+        _('end publication'),
+        db_index=True, blank=True, null=True,
         help_text=_('End date of publication.'))
 
     sites = models.ManyToManyField(
@@ -70,7 +72,8 @@ class CoreEntry(models.Model):
         help_text=_('Sites where the entry will be published.'))
 
     creation_date = models.DateTimeField(
-        _('creation date'), default=timezone.now,
+        _('creation date'),
+        db_index=True, default=timezone.now,
         help_text=_("Used to build the entry's URL."))
 
     last_update = models.DateTimeField(
@@ -159,7 +162,7 @@ class CoreEntry(models.Model):
         creation_date = self.creation_date
         if timezone.is_aware(creation_date):
             creation_date = timezone.localtime(creation_date)
-        return ('zinnia_entry_detail', (), {
+        return ('zinnia:entry_detail', (), {
             'year': creation_date.strftime('%Y'),
             'month': creation_date.strftime('%m'),
             'day': creation_date.strftime('%d'),
@@ -178,7 +181,9 @@ class CoreEntry(models.Model):
         get_latest_by = 'creation_date'
         verbose_name = _('entry')
         verbose_name_plural = _('entries')
-        index_together = [['slug', 'creation_date']]
+        index_together = [['slug', 'creation_date'],
+                          ['status', 'creation_date',
+                           'start_publication', 'end_publication']]
         permissions = (('can_view_all', 'Can view all entries'),
                        ('can_change_status', 'Can change status'),
                        ('can_change_author', 'Can change author(s)'), )
@@ -196,15 +201,15 @@ class ContentEntry(models.Model):
         """
         Returns the "content" field formatted in HTML.
         """
-        if MARKUP_LANGUAGE == 'markdown':
+        if '</p>' in self.content:
+            return self.content
+        elif MARKUP_LANGUAGE == 'markdown':
             return markdown(self.content)
         elif MARKUP_LANGUAGE == 'textile':
             return textile(self.content)
         elif MARKUP_LANGUAGE == 'restructuredtext':
             return restructuredtext(self.content)
-        elif not '</p>' in self.content:
-            return linebreaks(self.content)
-        return self.content
+        return linebreaks(self.content)
 
     @property
     def html_preview(self):
@@ -348,7 +353,7 @@ class ExcerptEntry(models.Model):
     """
     excerpt = models.TextField(
         _('excerpt'), blank=True,
-        help_text=_('Optional element.'))
+        help_text=_('Used for search and SEO.'))
 
     class Meta:
         abstract = True
